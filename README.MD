@@ -8,7 +8,7 @@
 ![Badge](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 
 
-Criando uma API Rest utilizando Python + Django e consumindo os dados em uma aplicação Wordpress.
+Criando uma API Rest utilizando Python e Django e consumindo os dados em uma aplicação Wordpress.
 A idéia é entender como consumir uma aplicação REST e gravar estes dados em campos personalizados no Wordpress.
 
 
@@ -60,141 +60,120 @@ Dados gravados nos campos
 
 ### Functions.php
 
+Registra novo tipo de  POST customizado
+
     function register_servidor() {
-    register_post_type( 'servidor', array(
-    'label' => 'Servidores',
-    'public' => true,
-    'capability_type' => 'post',
-    ));
+        register_post_type( 'servidor', array(
+        'label' => 'Servidores',
+        'public' => true,
+        'capability_type' => 'post',
+        ));
     }
     add_action( 'init', 'register_servidor' );
 
 
-    function clear_servidores_from_db() {
+Verifica registros no BD
 
-    global $wpdb;
- 
-    $wpdb->query("DELETE FROM wp_posts WHERE post_type='servidor'");
-    $wpdb->query("DELETE FROM wp_postmeta WHERE post_id NOT IN (SELECT id FROM wp_posts);");
-    $wpdb->query("DELETE FROM wp_term_relationships WHERE object_id NOT IN (SELECT id FROM wp_posts)");
+    function clear_servidores_from_db() {
+        global $wpdb;
+
+        $wpdb->query("DELETE FROM wp_posts WHERE post_type='servidor'");
+        $wpdb->query("DELETE FROM wp_postmeta WHERE post_id NOT IN (SELECT id FROM wp_posts);");
+        $wpdb->query("DELETE FROM wp_term_relationships WHERE object_id NOT IN (SELECT id FROM wp_posts)");
 
     }
 
+Chamada AJAX e registro dos dados nos campos personalizados
 
     add_action( 'update_servidor_list', 'get_servidores_from_api' );
     add_action( 'wp_ajax_nopriv_get_servidores_from_api', 'get_servidores_from_api' );
     add_action( 'wp_ajax_get_servidores_from_api', 'get_servidores_from_api' );
     function get_servidores_from_api() {
 
-    $current_page = ( ! empty( $_POST['current_page'] ) ) ? $_POST['current_page'] : 1;
-    $servidores = [];
+        $current_page = ( ! empty( $_POST['current_page'] ) ) ? $_POST['current_page'] : 1;
+        $servidores = [];
+
+        $results = wp_remote_retrieve_body( wp_remote_get('https://dgrh-servidores.herokuapp.com/api/list/?page=' . $current_page . '&per_page=50') );
+
+        $results = json_decode( $results );  
+
+        if( ! is_array( $results ) || empty( $results ) ){
+            return false;
+        }
  
-    // Should return an array of objects
-    $results = wp_remote_retrieve_body( wp_remote_get('https://dgrh-servidores.herokuapp.com/api/list/?page=' . $current_page . '&per_page=50') );
+        $servidores[] = $results;
  
-    // turn it into a PHP array from JSON string
-    $results = json_decode( $results );  
-   
-    // Either the API is down or something else spooky happened. Just be done.
-    if( ! is_array( $results ) || empty( $results ) ){
-      return false;
-    }
- 
-    $servidores[] = $results;
- 
-    foreach( $servidores[0] as $servidor ){
+        foreach( $servidores[0] as $servidor ){
      
-      $servidor_slug = slugify( $servidor->nome . '-' . $servidor->id );    
+        $servidor_slug = slugify( $servidor->nome . '-' . $servidor->id );    
  
-      $existing_servidor = get_page_by_path( $servidor_slug, 'OBJECT', 'servidor' );
+        $existing_servidor = get_page_by_path( $servidor_slug, 'OBJECT', 'servidor' );
  
-      if( $existing_servidor === null  ){
+        if( $existing_servidor === null  ){
        
-        $inserted_servidor = wp_insert_post( [
-          'post_name' => $servidor_slug,
-          'post_title' => $servidor_slug,
-          'post_type' => 'servidor',
-          'post_status' => 'publish'
+            $inserted_servidor = wp_insert_post( [
+              'post_name' => $servidor_slug,
+              'post_title' => $servidor_slug,
+              'post_type' => 'servidor',
+              'post_status' => 'publish'
         ] );
  
         if( is_wp_error( $inserted_servidor ) || $inserted_servidor === 0 ) {
-          // die('Could not insert servidor: ' . $servidor_slug);
-          // error_log( 'Could not insert servidor: ' . $servidor_slug );
-          continue;
+              continue;
         }
- 
-        // add meta fields
-        $fillable = [
-         'field_6319426a6b084'=> 'nome',
-            'field_631942776b085' => 'email',
-            'field_631942806b086' => 'departamento',
-            'field_6319428b6b087' => 'ramal',
-            'field_631942936b088' => 'data_nascimento',
-            'field_631942a46b089' => 'is_active',
+            $fillable = [
+             'field_6319426a6b084'=> 'nome',
+                'field_631942776b085' => 'email',
+                'field_631942806b086' => 'departamento',
+                'field_6319428b6b087' => 'ramal',
+                'field_631942936b088' => 'data_nascimento',
+                'field_631942a46b089' => 'is_active',
            
         ];
  
         foreach( $fillable as $key => $nome ) {
-          update_field( $key, $servidor->$nome, $inserted_servidor );
+            update_field( $key, $servidor->$nome, $inserted_servidor );
         }
  
        
       } else {
        
-        $existing_servidor_id = $existing_servidor->id;
-        $exisiting_servidor_timestamp = get_field('updated_at', $existing_servidor_id);
+            $existing_servidor_id = $existing_servidor->id;
+            $exisiting_servidor_timestamp = get_field('updated_at', $existing_servidor_id);
  
         if( $servidor->updated_at >= $exisiting_servidor_timestamp ){
  
-          $fillable = [
-            'field_6319426a6b084'=> 'nome',
-            'field_631942776b085' => 'email',
-            'field_631942806b086' => 'departamento',
-            'field_6319428b6b087' => 'ramal',
-            'field_631942936b088' => 'data_nascimento',
-            'field_631942a46b089' => 'is_active',
+              $fillable = [
+                'field_6319426a6b084'=> 'nome',
+                'field_631942776b085' => 'email',
+                'field_631942806b086' => 'departamento',
+                'field_6319428b6b087' => 'ramal',
+                'field_631942936b088' => 'data_nascimento',
+                'field_631942a46b089' => 'is_active',
           ];
  
           foreach( $fillable as $key => $nome ){
             update_field( $nome, $servidor->$nome, $existing_servidor_id);
           }
- 
         }
- 
       }
- 
     }
    
     $current_page = $current_page + 1;
     wp_remote_post( admin_url('admin-ajax.php?action=get_servidores_from_api'), [
-      'blocking' => false,
-      'sslverify' => false, // we are sending this to ourselves, so trust it.
-      'body' => [
-        'current_page' => $current_page
+          'blocking' => false,
+          'sslverify' => false, // we are sending this to ourselves, so trust it.
+          'body' => [
+            'current_page' => $current_page
       ]
     ] );
 
     }
 
 
-    function slugify($text){
+### Créditos
 
-    // remove unwanted characters
-    $text = preg_replace('~[^-\w]+~', '', $text);
- 
-    // trim
-    $text = trim($text, '-');
- 
-    // remove duplicate -
-    $text = preg_replace('~-+~', '-', $text);
- 
-    // lowercase
-    $text = strtolower($text);
- 
-    if (empty($text)) {
-      return 'n-a';
-    }
- 
-    return $text;
-    }
- 
+- https://www.youtube.com/watch?v=LWM41Rcao3s&t=214s
+- https://pt.wordpressask.com/consumindo-uma-api-externa-no-wordpress.html
+- https://felipeelia.com.br/a-api-rest-do-wordpress
+- https://kinsta.com/pt/blog/wordpress-rest-api/
