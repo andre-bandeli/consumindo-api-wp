@@ -40,8 +40,21 @@ Endpoint REST (lista de servidores via JSON)
 ![objetos-rest](https://user-images.githubusercontent.com/87938869/190926669-a4a10f53-600e-4020-8d26-b25de49f91e9.jpg)
 
 
-
 Wordpress
+
+Criação de campo personalizado utilizando plugin 'Advanced Custom Fields'
+
+![campos](https://user-images.githubusercontent.com/87938869/190927730-d23d7051-d8ad-456f-8d52-fbc8b2688aa8.jpg)
+
+![campos-wp](https://user-images.githubusercontent.com/87938869/190927754-6f6c1119-8a7b-4e35-86fa-dd4138ca1ebb.jpg)
+
+Campo Servidores
+
+![servidores-wp](https://user-images.githubusercontent.com/87938869/190927769-13da64dc-6949-4a6a-95d2-14c03510ca0c.jpg)
+
+Dados gravados nos campos
+
+![servidores-wp_2](https://user-images.githubusercontent.com/87938869/190927783-7c311d8a-6298-4ca3-9bdb-c3d75cd8a226.jpg)
 
 
 
