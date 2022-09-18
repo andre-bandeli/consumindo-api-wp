@@ -8,12 +8,11 @@
 ![Badge](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 
 
-Criando uma API Rest utilizando Python + Django e consumindo os dados
-em uma aplicação Wordpress.
+Criando uma API Rest utilizando Python + Django e consumindo os dados em uma aplicação Wordpress.
 A idéia é entender como consumir uma aplicação REST e gravar estes dados em campos personalizados no Wordpress.
 
 
-### Deploy
+### Deploy API
 
 https://dgrh-servidores.herokuapp.com/api/list/
 
@@ -28,19 +27,22 @@ https://dgrh-servidores.herokuapp.com/api/list/
 
 ### Visão Geral
 
+Painel administrativo Django
 
-https://dgrh-servidores.herokuapp.com/admin/login/?next=/admin/
-![](../../Imagens/Capturas de tela/Captura de tela de 2022-09-11 20-18-53.png)
+![django-api](https://user-images.githubusercontent.com/87938869/190926519-ae43f862-dff2-4545-8f56-2de1d09c6800.jpg)
 
-![](../../Imagens/Capturas de tela/Captura de tela de 2022-09-11 20-13-41.png)
+Adicionar novo servidor
+
+![novo-servidor](https://user-images.githubusercontent.com/87938869/190926595-b2b6e39f-c5eb-493a-8109-57dee94a15f8.jpg)
+
+Endpoint REST (lista de servidores via JSON)
+
+![objetos-rest](https://user-images.githubusercontent.com/87938869/190926669-a4a10f53-600e-4020-8d26-b25de49f91e9.jpg)
+
 
 
 Wordpress
 
-![](../../Downloads/servidores2.png)
-
-![](../../Downloads/servidores.png)
-![](../../Downloads/servidores3.png)
 
 
 ### Functions.php
