@@ -12,11 +12,6 @@ Criando uma API Rest utilizando Python e Django e consumindo os dados em uma apl
 A idéia é entender como consumir uma aplicação REST e gravar estes dados em campos personalizados no Wordpress.
 
 
-### Deploy API
-
-https://dgrh-servidores.herokuapp.com/api/list/
-
-
 ### Ferramentas utilizadas
 
 - Django
